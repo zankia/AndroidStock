@@ -19,6 +19,8 @@
         <activity
             android:name=".view.ListActivity"
             android:windowSoftInputMode="adjustPan"/>
+        <activity android:name=".view.DisplayActivity">
+        </activity>
     </application>
 
 </manifest>

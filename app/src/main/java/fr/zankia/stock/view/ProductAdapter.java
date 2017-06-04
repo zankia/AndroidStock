@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -51,7 +50,7 @@ public class ProductAdapter extends BaseAdapter {
                 Context.LAYOUT_INFLATER_SERVICE);
         convertView = inflater.inflate(this.resource, null);
         ((TextView)convertView.findViewById(nameId)).setText((CharSequence) getItem(position));
-        ((EditText)convertView.findViewById(quantityId)).setText(String.valueOf(items.get((String)
+        ((TextView)convertView.findViewById(quantityId)).setText(String.valueOf(items.get((String)
                 getItem(position))));
         return convertView;
     }

@@ -52,7 +52,7 @@ public class ListActivity extends Activity {
     public void showCategory(View view) {
         CharSequence name = ((Button) view).getText();
         ListView itemsView = (ListView) findViewById(R.id.itemsView);
-        ProductAdapter  adapter = new ProductAdapter(R.layout.row_item, R.id.itemName,
+        ProductAdapter adapter = new ProductAdapter(R.layout.row_item, R.id.itemName,
                 R.id.itemQuantity);
 
         StockDbHelper helper = new StockDbHelper(itemsView.getContext());

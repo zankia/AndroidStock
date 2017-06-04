@@ -17,6 +17,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@android:color/holo_green_dark"
+            android:onClick="setDisplayActivity"
             android:text="@string/leftButton"
             android:textColor="@android:color/white"
             android:textSize="36sp"/>

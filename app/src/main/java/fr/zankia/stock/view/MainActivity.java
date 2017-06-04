@@ -24,6 +24,9 @@ public class MainActivity extends Activity {
     public void setListActivity(View view) {
         startActivity(new Intent(this, ListActivity.class));
     }
+    public void setDisplayActivity(View view) {
+        startActivity(new Intent(this, DisplayActivity.class));
+    }
 
     public void resetDB(View view) {
         StockDbHelper helper = new StockDbHelper(view.getContext());
