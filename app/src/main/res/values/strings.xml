@@ -2,5 +2,7 @@
     <string name="app_name">Stock</string>
     <string name="leftButton">Consulter</string>
     <string name="rightButton">Ajouter</string>
-    <string name="zero">0</string>
+    <string name="downButton">Remplir la DB</string>
+    <string name="dbToast">Base de données remplie</string>
+    <string name="empty"/>
 </resources>

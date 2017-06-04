@@ -1,35 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="fr.zankia.stock.MainActivity">
+    tools:context="fr.zankia.stock.view.MainActivity">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="1">
 
         <Button
             android:id="@+id/a"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@android:color/holo_green_dark"
             android:text="@string/leftButton"
             android:textColor="@android:color/white"
-            android:textSize="36sp" />
+            android:textSize="36sp"/>
 
         <Button
-            android:id="@+id/b"
-            android:layout_width="wrap_content"
+            android:id="@+id/c"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@android:color/holo_blue_dark"
-            android:onClick="setListActivity"
-            android:text="@string/rightButton"
+            android:layout_weight="2"
+            android:background="@android:color/holo_purple"
+            android:onClick="resetDB"
+            android:text="@string/downButton"
             android:textColor="@android:color/white"
-            android:textSize="36sp" />
+            android:textSize="36sp"/>
+
 
     </LinearLayout>
 
-</RelativeLayout>
+    <Button
+        android:id="@+id/b"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@android:color/holo_blue_dark"
+        android:onClick="setListActivity"
+        android:text="@string/rightButton"
+        android:textColor="@android:color/white"
+        android:textSize="36sp" />
+
+</LinearLayout>
