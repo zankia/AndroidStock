@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.ListView;
 
 import fr.zankia.stock.R;
@@ -11,6 +12,17 @@ import fr.zankia.stock.dao.StockContract;
 import fr.zankia.stock.dao.StockDbHelper;
 
 public class ProductDisplayActivity extends Activity {
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,13 +34,17 @@ public class ProductDisplayActivity extends Activity {
         ProductAdapter adapter = new ProductAdapter(R.layout.row_simple_item, R.id.itemName,
                 R.id.itemQuantity);
 
+        String categoryName = this.getIntent().getStringExtra(this.getString(R.string.extraName));
+
         StockDbHelper helper = new StockDbHelper(productView.getContext());
         SQLiteDatabase db = helper.getReadableDatabase();
 
         Cursor cursor = db.query(StockContract.ProductEntry.TABLE_NAME,
                 new String[]{StockContract.ProductEntry.COLUMN_NAME_NAME,
                         StockContract.ProductEntry.COLUMN_NAME_QUANTITY},
-                null, null, null, null, null);
+                StockContract.ProductEntry.COLUMN_NAME_QUANTITY + " != 0 AND "
+                        + StockContract.ProductEntry.COLUMN_NAME_CAT + " = ?",
+                new String[]{categoryName}, null, null, null);
 
         while(cursor.moveToNext()) {
             int nameIndex = cursor.getColumnIndexOrThrow(StockContract.ProductEntry
@@ -41,6 +57,7 @@ public class ProductDisplayActivity extends Activity {
         }
 
         cursor.close();
+        db.close();
 
         productView.setAdapter(adapter);
     }

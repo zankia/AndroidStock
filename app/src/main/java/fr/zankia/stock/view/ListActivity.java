@@ -5,7 +5,9 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,12 +21,21 @@ import fr.zankia.stock.dao.StockDbHelper;
 
 public class ListActivity extends Activity {
 
+     @Override
+     public boolean onOptionsItemSelected(MenuItem item) {
+         switch (item.getItemId()) {
+             case android.R.id.home:
+                 this.finish();
+                 return true;
+             default:
+                 return super.onOptionsItemSelected(item);
+         }
+     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.getActionBar().setDisplayHomeAsUpEnabled(true);
-        //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_list);
 
         ListView categoryView = (ListView) findViewById(R.id.categoryView);
@@ -44,6 +55,7 @@ public class ListActivity extends Activity {
         }
 
         cursor.close();
+        db.close();
 
         categoryView.setAdapter(adapter);
     }
@@ -76,6 +88,7 @@ public class ListActivity extends Activity {
         }
 
         cursor.close();
+        db.close();
 
         itemsView.setAdapter(adapter);
     }
@@ -119,5 +132,7 @@ public class ListActivity extends Activity {
                 StockContract.ProductEntry.COLUMN_NAME_NAME + "= ?",
                 new String[] {(String) ((TextView)((LinearLayout)view.getParent()).getChildAt(0))
                         .getText()});
+
+        db.close();
     }
 }
