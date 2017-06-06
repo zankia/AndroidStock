@@ -21,6 +21,8 @@
             android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".view.DisplayActivity">
         </activity>
+        <activity android:name=".view.ProductDisplayActivity">
+        </activity>
     </application>
 
 </manifest>

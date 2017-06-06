@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="fr.zankia.stock.view.DisplayActivity">
+    tools:context="fr.zankia.stock.view.ProductDisplayActivity">
 
-    <GridView
-        android:id="@+id/itemsView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-</GridLayout>
+</LinearLayout>

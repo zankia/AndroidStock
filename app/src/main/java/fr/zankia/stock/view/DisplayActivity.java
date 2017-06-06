@@ -1,10 +1,14 @@
 package fr.zankia.stock.view;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.widget.ListView;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.GridView;
 
 import fr.zankia.stock.R;
 import fr.zankia.stock.dao.StockContract;
@@ -17,31 +21,32 @@ public class DisplayActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display);
 
-        ListView productView = (ListView) findViewById(R.id.itemsView);
-        ProductAdapter adapter = new ProductAdapter(R.layout.row_simple_item, R.id.itemName,
-                R.id.itemQuantity);
+        GridView categoryView = (GridView) findViewById(R.id.itemsView);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.category_button);
 
-        StockDbHelper helper = new StockDbHelper(productView.getContext());
+        StockDbHelper helper = new StockDbHelper(categoryView.getContext());
         SQLiteDatabase db = helper.getReadableDatabase();
 
-        Cursor cursor = db.query(StockContract.ProductEntry.TABLE_NAME,
-                new String[]{StockContract.ProductEntry.COLUMN_NAME_NAME,
-                StockContract.ProductEntry.COLUMN_NAME_QUANTITY},
-                StockContract.ProductEntry.COLUMN_NAME_QUANTITY + " != 0",
-                null, null, null, StockContract.ProductEntry.COLUMN_NAME_CAT);
+        Cursor cursor = db.query(StockContract.CategoryEntry.TABLE_NAME,
+                new String[]{StockContract.CategoryEntry.COLUMN_NAME_NAME},
+                null, null, null, null, null);
 
         while(cursor.moveToNext()) {
-            int nameIndex = cursor.getColumnIndexOrThrow(StockContract.ProductEntry
-                    .COLUMN_NAME_NAME);
-            String prodName = cursor.getString(nameIndex);
-            int quantIndex = cursor.getColumnIndexOrThrow(StockContract.ProductEntry
-                    .COLUMN_NAME_QUANTITY);
-            int quantity = cursor.getInt(quantIndex);
-            adapter.add(prodName, quantity);
+            int index = cursor.getColumnIndexOrThrow(StockContract.CategoryEntry.COLUMN_NAME_NAME);
+            String name = cursor.getString(index);
+            adapter.add(name);
         }
 
         cursor.close();
 
-        productView.setAdapter(adapter);
+        categoryView.setAdapter(adapter);
+    }
+
+    public void showCategory(View view) {
+        CharSequence name = ((Button) view).getText();
+        Intent intent = new Intent(this, ProductDisplayActivity.class);
+        intent.putExtra("name", name);
+
+        this.startActivity(intent);
     }
 }
