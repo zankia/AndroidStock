@@ -1,10 +1,14 @@
 package fr.zankia.stock.view;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
 
 import fr.zankia.stock.R;
@@ -12,6 +16,8 @@ import fr.zankia.stock.dao.StockContract;
 import fr.zankia.stock.dao.StockDbHelper;
 
 public class ProductDisplayActivity extends Activity {
+
+    private String categoryName;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -28,7 +34,7 @@ public class ProductDisplayActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String categoryName = this.getIntent().getStringExtra(this.getString(R.string.extraName));
+        categoryName = this.getIntent().getStringExtra(this.getString(R.string.extraName));
 
         this.getActionBar().setDisplayHomeAsUpEnabled(true);
         this.setTitle(categoryName);
@@ -63,5 +69,38 @@ public class ProductDisplayActivity extends Activity {
         db.close();
 
         productView.setAdapter(adapter);
+    }
+
+    public void empty(View view) {
+        new AlertDialog.Builder(this)
+                .setMessage(getString(R.string.emptyConfirm) + " " + categoryName  + " "
+                        + getString(R.string.qMark))
+                .setPositiveButton(R.string.emptyAction, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        emptyDb();
+                        finish();
+                    }
+
+                })
+                .setNegativeButton(R.string.confirm, null)
+                .show();
+    }
+
+    private void emptyDb() {
+        StockDbHelper helper = new StockDbHelper(this.getBaseContext());
+        SQLiteDatabase db = helper.getReadableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(StockContract.ProductEntry.COLUMN_NAME_QUANTITY, 0);
+
+
+        db.update(StockContract.ProductEntry.TABLE_NAME,
+                values,
+                StockContract.ProductEntry.COLUMN_NAME_CAT + "= ?",
+                new String[] {categoryName});
+
+        db.close();
     }
 }

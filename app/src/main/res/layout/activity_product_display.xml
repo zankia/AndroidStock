@@ -6,6 +6,14 @@
     android:layout_height="match_parent"
     tools:context="fr.zankia.stock.view.ProductDisplayActivity">
 
+
+    <ImageButton
+        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:contentDescription="@string/empty"
+        android:onClick="empty"
+        android:src="@drawable/cross"/>
+
     <ListView
         android:id="@+id/itemsView"
         android:layout_width="match_parent"
