@@ -6,4 +6,8 @@
     <string name="dbToast">Base de données remplie</string>
     <string name="empty"/>
     <string name="extraName">name</string>
+    <string name="emptyConfirm">Étes vous sûr de vouloir vider</string>
+    <string name="emptyAction">Vider</string>
+    <string name="confirm">Annuler</string>
+    <string name="qMark">\?</string>
 </resources>
