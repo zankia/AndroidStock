@@ -18,6 +18,8 @@ public class ProductAdapter extends BaseAdapter {
     private final int nameId;
     private final int quantityId;
 
+    private View.OnFocusChangeListener listener;
+
     private ArrayList<String> itemList;
     private HashMap<String, Integer> items;
 
@@ -27,6 +29,12 @@ public class ProductAdapter extends BaseAdapter {
         this.quantityId = quantityId;
         itemList = new ArrayList<>();
         items = new HashMap<>();
+    }
+
+    public ProductAdapter(int resource, int nameId, int quantityId, View.OnFocusChangeListener
+            listener) {
+        this(resource, nameId, quantityId);
+        this.listener = listener;
     }
 
     @Override
@@ -48,15 +56,22 @@ public class ProductAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
-        convertView = inflater.inflate(this.resource, null);
+        if(convertView == null) {
+            convertView = inflater.inflate(this.resource, null);
+        }
         ((TextView)convertView.findViewById(nameId)).setText((CharSequence) getItem(position));
         ((TextView)convertView.findViewById(quantityId)).setText(String.valueOf(items.get((String)
                 getItem(position))));
+        if(listener != null) {
+            convertView.findViewById(quantityId).setOnFocusChangeListener(listener);
+        }
         return convertView;
     }
 
     public void add(String name, int quantity) {
-        itemList.add(itemList.size(), name);
+        if(!itemList.contains(name)) {
+            itemList.add(itemList.size(), name);
+        }
         items.put(name, quantity);
     }
 }

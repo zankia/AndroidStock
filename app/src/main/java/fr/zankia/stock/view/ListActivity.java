@@ -5,11 +5,10 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -21,7 +20,9 @@ import fr.zankia.stock.dao.StockDbHelper;
 
 public class ListActivity extends Activity {
 
-     @Override
+    private ProductAdapter prodAdapter;
+
+    @Override
      public boolean onOptionsItemSelected(MenuItem item) {
          switch (item.getItemId()) {
              case android.R.id.home:
@@ -36,6 +37,7 @@ public class ListActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.getActionBar().setDisplayHomeAsUpEnabled(true);
+        this.setTitle(R.string.rightButton);
         setContentView(R.layout.activity_list);
 
         ListView categoryView = (ListView) findViewById(R.id.categoryView);
@@ -62,10 +64,20 @@ public class ListActivity extends Activity {
 
 
     public void showCategory(View view) {
-        CharSequence name = ((Button) view).getText();
+        View.OnFocusChangeListener listener = new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                Log.d("View", ((EditText) v).getText().toString());
+                Log.d("Focus", String.valueOf(hasFocus));
+                if(!hasFocus) {
+                    silentDbUpdate(v, Integer.parseInt(((EditText) v).getText().toString()));
+                }
+            }
+        };
+
         ListView itemsView = (ListView) findViewById(R.id.itemsView);
-        ProductAdapter adapter = new ProductAdapter(R.layout.row_item, R.id.itemName,
-                R.id.itemQuantity);
+        this.prodAdapter = new ProductAdapter(R.layout.row_item, R.id.itemName, R.id
+                .itemQuantity, listener);
 
         StockDbHelper helper = new StockDbHelper(itemsView.getContext());
         SQLiteDatabase db = helper.getReadableDatabase();
@@ -74,7 +86,7 @@ public class ListActivity extends Activity {
                 new String[]{StockContract.ProductEntry.COLUMN_NAME_NAME,
                         StockContract.ProductEntry.COLUMN_NAME_QUANTITY},
                 StockContract.ProductEntry.COLUMN_NAME_CAT + " = ?",
-                new String[]{String.valueOf(name)},
+                new String[]{String.valueOf(((TextView) view).getText())},
                 null, null, null);
 
         while(cursor.moveToNext()) {
@@ -84,13 +96,13 @@ public class ListActivity extends Activity {
             int quantIndex = cursor.getColumnIndexOrThrow(StockContract.ProductEntry
                     .COLUMN_NAME_QUANTITY);
             int quantity = cursor.getInt(quantIndex);
-            adapter.add(prodName, quantity);
+            this.prodAdapter.add(prodName, quantity);
         }
 
         cursor.close();
         db.close();
 
-        itemsView.setAdapter(adapter);
+        itemsView.setAdapter(this.prodAdapter);
     }
 
     public void removeOne(View view) {
@@ -100,12 +112,10 @@ public class ListActivity extends Activity {
             text = "1";
         }
         int value = Integer.parseInt(text);
-        if(value == 0 ) {
+        if(value == 0) {
             return;
         }
-        count.setText(String.valueOf(--value));
-
-        dbUpdate(view, value);
+        dbUpdate(view, --value);
     }
 
     public void addOne(View view) {
@@ -115,12 +125,17 @@ public class ListActivity extends Activity {
             text = "0";
         }
         int value = Integer.parseInt(text);
-        count.setText(String.valueOf(++value));
-
-        dbUpdate(view, value);
+        dbUpdate(view, ++value);
     }
 
     private void dbUpdate(View view, int value) {
+        silentDbUpdate(view, value);
+        this.prodAdapter.notifyDataSetChanged();
+    }
+
+    private void silentDbUpdate(View view, int value) {
+        String label = ((TextView) ((LinearLayout) view.getParent()).getChildAt(0))
+                .getText().toString();
         StockDbHelper helper = new StockDbHelper(view.getContext());
         SQLiteDatabase db = helper.getReadableDatabase();
 
@@ -130,9 +145,10 @@ public class ListActivity extends Activity {
         db.update(StockContract.ProductEntry.TABLE_NAME,
                 values,
                 StockContract.ProductEntry.COLUMN_NAME_NAME + "= ?",
-                new String[] {(String) ((TextView)((LinearLayout)view.getParent()).getChildAt(0))
-                        .getText()});
+                new String[] {label});
 
         db.close();
+
+        this.prodAdapter.add(label, value);
     }
 }

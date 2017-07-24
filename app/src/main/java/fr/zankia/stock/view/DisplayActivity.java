@@ -32,6 +32,7 @@ public class DisplayActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.getActionBar().setDisplayHomeAsUpEnabled(true);
+        this.setTitle(R.string.leftButton);
         setContentView(R.layout.activity_display);
 
         GridView categoryView = (GridView) findViewById(R.id.itemsView);

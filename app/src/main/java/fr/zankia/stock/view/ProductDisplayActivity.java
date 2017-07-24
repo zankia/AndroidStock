@@ -27,14 +27,17 @@ public class ProductDisplayActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        String categoryName = this.getIntent().getStringExtra(this.getString(R.string.extraName));
+
         this.getActionBar().setDisplayHomeAsUpEnabled(true);
+        this.setTitle(categoryName);
         setContentView(R.layout.activity_product_display);
 
         ListView productView = (ListView) findViewById(R.id.itemsView);
         ProductAdapter adapter = new ProductAdapter(R.layout.row_simple_item, R.id.itemName,
                 R.id.itemQuantity);
 
-        String categoryName = this.getIntent().getStringExtra(this.getString(R.string.extraName));
 
         StockDbHelper helper = new StockDbHelper(productView.getContext());
         SQLiteDatabase db = helper.getReadableDatabase();
