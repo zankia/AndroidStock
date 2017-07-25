@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -64,13 +65,25 @@ public class ListActivity extends Activity {
 
 
     public void showCategory(View view) {
+
+        for(int i = 0; i < ((ListView) view.getParent()).getChildCount(); ++i) {
+            ((ListView) view.getParent()).getChildAt(i).getBackground().setColorFilter
+                    (0xFFD8D8D8, PorterDuff.Mode.MULTIPLY);
+        }
+        view.getBackground().setColorFilter(getResources().getColor(android.R.color
+                .holo_blue_dark), PorterDuff.Mode.MULTIPLY);
+
         View.OnFocusChangeListener listener = new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 Log.d("View", ((EditText) v).getText().toString());
                 Log.d("Focus", String.valueOf(hasFocus));
                 if(!hasFocus) {
-                    silentDbUpdate(v, Integer.parseInt(((EditText) v).getText().toString()));
+                    String amount = ((EditText) v).getText().toString();
+                    if(amount.equals("")) {
+                       amount = "0";
+                    }
+                    silentDbUpdate(v, Integer.parseInt(amount));
                 }
             }
         };

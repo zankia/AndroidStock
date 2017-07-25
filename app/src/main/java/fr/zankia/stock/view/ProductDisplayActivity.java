@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListView;
+import android.widget.GridView;
 
 import fr.zankia.stock.R;
 import fr.zankia.stock.dao.StockContract;
@@ -40,7 +40,7 @@ public class ProductDisplayActivity extends Activity {
         this.setTitle(categoryName);
         setContentView(R.layout.activity_product_display);
 
-        ListView productView = (ListView) findViewById(R.id.itemsView);
+        GridView productView = (GridView) findViewById(R.id.itemsView);
         ProductAdapter adapter = new ProductAdapter(R.layout.row_simple_item, R.id.itemName,
                 R.id.itemQuantity);
 

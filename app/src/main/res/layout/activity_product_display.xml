@@ -14,9 +14,14 @@
         android:onClick="empty"
         android:src="@drawable/cross"/>
 
-    <ListView
+    <GridView
         android:id="@+id/itemsView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="@android:color/darker_gray"
+        android:numColumns="2"
+        android:horizontalSpacing="2dp"
+        android:verticalSpacing="2dp"
+        android:listSelector="@color/colorAccent"/>
 
 </LinearLayout>
