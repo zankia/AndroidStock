@@ -6,8 +6,15 @@
     <string name="dbToast">Base de données remplie</string>
     <string name="empty"/>
     <string name="extraName">name</string>
-    <string name="emptyConfirm">Étes vous sûr de vouloir vider</string>
+    <string name="emptyConfirm">Êtes vous sûr de vouloir vider</string>
     <string name="emptyAction">Vider</string>
-    <string name="confirm">Annuler</string>
+    <string name="cancel">Annuler</string>
+    <string name="confirm">Valider</string>
     <string name="qMark">\?</string>
+    <string name="newCat">Entrez le nom du fournisseur</string>
+    <string name="newProd">Entrez le nom de la référence</string>
+    <string name="type">type</string>
+    <string name="name">name</string>
+    <string name="Cat">Cat</string>
+    <string name="Prod">Prod</string>
 </resources>

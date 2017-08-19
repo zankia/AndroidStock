@@ -10,8 +10,7 @@
         android:id="@+id/categoryView"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_weight="2"
-        android:listSelector="@color/colorAccent"/>
+        android:layout_weight="2"/>
 
     <ListView
         android:id="@+id/itemsView"

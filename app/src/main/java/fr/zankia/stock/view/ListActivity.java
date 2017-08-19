@@ -1,7 +1,9 @@
 package fr.zankia.stock.view;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.PorterDuff;
@@ -60,11 +62,16 @@ public class ListActivity extends Activity {
         cursor.close();
         db.close();
 
+        View footer = getLayoutInflater().inflate(R.layout.row_button_add, null);
+        footer.setTag(R.string.type, R.string.Cat);
+        categoryView.addFooterView(footer);
+
         categoryView.setAdapter(adapter);
     }
 
 
     public void showCategory(View view) {
+        String categoryName = ((TextView) view).getText().toString();
 
         for(int i = 0; i < ((ListView) view.getParent()).getChildCount(); ++i) {
             ((ListView) view.getParent()).getChildAt(i).getBackground().setColorFilter
@@ -99,7 +106,7 @@ public class ListActivity extends Activity {
                 new String[]{StockContract.ProductEntry.COLUMN_NAME_NAME,
                         StockContract.ProductEntry.COLUMN_NAME_QUANTITY},
                 StockContract.ProductEntry.COLUMN_NAME_CAT + " = ?",
-                new String[]{String.valueOf(((TextView) view).getText())},
+                new String[]{categoryName},
                 null, null, null);
 
         while(cursor.moveToNext()) {
@@ -114,6 +121,15 @@ public class ListActivity extends Activity {
 
         cursor.close();
         db.close();
+
+        View footer = getLayoutInflater().inflate(R.layout.row_button_add, null);
+        footer.setTag(R.string.Prod);
+        footer.setTag(R.string.type, R.string.Prod);
+        footer.setTag(R.string.name, categoryName);
+        if (itemsView.getFooterViewsCount() > 0) {
+            itemsView.removeFooterView(itemsView.findViewWithTag(R.string.Prod));
+        }
+        itemsView.addFooterView(footer);
 
         itemsView.setAdapter(this.prodAdapter);
     }
@@ -163,5 +179,50 @@ public class ListActivity extends Activity {
         db.close();
 
         this.prodAdapter.add(label, value);
+    }
+
+    public void addCategory(final View view) {
+        final EditText editText = new EditText(this);
+        final StockDbHelper helper = new StockDbHelper(view.getContext());
+
+        int message = 0;
+        if((int) view.getTag(R.string.type) == R.string.Cat) {
+            message = R.string.newCat;
+        } else if((int) view.getTag(R.string.type) == R.string.Prod) {
+            message = R.string.newProd;
+        }
+        new AlertDialog.Builder(this)
+                .setMessage(message)
+                .setView(editText)
+                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SQLiteDatabase db = helper.getReadableDatabase();
+                        ContentValues values = new ContentValues();
+                        String newValue = editText.getText().toString();
+
+                        if((int) view.getTag(R.string.type) == R.string.Cat) {
+
+                            values.put(StockContract.CategoryEntry.COLUMN_NAME_NAME, newValue);
+                            db.insert(StockContract.CategoryEntry.TABLE_NAME, null, values);
+                            db.close();
+                            finish();
+                            startActivity(getIntent());
+
+                        } else if((int) view.getTag(R.string.type) == R.string.Prod) {
+
+                            values.put(StockContract.ProductEntry.COLUMN_NAME_NAME, newValue);
+                            values.put(StockContract.ProductEntry.COLUMN_NAME_CAT,
+                                    (String) view.getTag(R.string.name));
+                            values.put(StockContract.ProductEntry.COLUMN_NAME_QUANTITY, 0);
+                            db.insert(StockContract.ProductEntry.TABLE_NAME, null, values);
+                            db.close();
+                            prodAdapter.add(newValue, 0);
+
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
     }
 }
