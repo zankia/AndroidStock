@@ -76,6 +76,9 @@ public class ProductAdapter extends BaseAdapter {
     }
 
     public void update(String oldName, String newName) {
+        if(oldName.equals(newName)) {
+            return;
+        }
         itemList.set(itemList.indexOf(oldName), newName);
         items.put(newName, items.get(oldName));
         items.remove(oldName);
