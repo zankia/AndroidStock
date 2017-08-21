@@ -17,4 +17,8 @@
     <string name="name">name</string>
     <string name="Cat">Cat</string>
     <string name="Prod">Prod</string>
+    <string name="dbWarning">ATTENTION vous allez perdre toutes vos données si vous continuez.
+        Veuillez confirmer en écrivant le texte suivant :</string>
+    <string name="validityCheck">réinitialisation des données</string>
+    <string name="test">test</string>
 </resources>
