@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -26,7 +27,7 @@ public class ListActivity extends Activity {
     private ProductAdapter prodAdapter;
 
     @Override
-     public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
          switch (item.getItemId()) {
              case android.R.id.home:
                  this.finish();
@@ -61,6 +62,16 @@ public class ListActivity extends Activity {
 
         cursor.close();
         db.close();
+
+        categoryView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("longClick", ((TextView) view).getText().toString());
+                view.setTag(R.string.type, R.string.Cat);
+                updateCategory(view);
+                return true;
+            }
+        });
 
         View footer = getLayoutInflater().inflate(R.layout.row_button_add, null);
         footer.setTag(R.string.type, R.string.Cat);
@@ -121,6 +132,17 @@ public class ListActivity extends Activity {
 
         cursor.close();
         db.close();
+
+
+        itemsView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("longClick", ((TextView) view).getText().toString());
+                view.setTag(R.string.type, R.string.Prod);
+                updateCategory(view);
+                return true;
+            }
+        });
 
         View footer = getLayoutInflater().inflate(R.layout.row_button_add, null);
         footer.setTag(R.string.Prod);
@@ -218,6 +240,82 @@ public class ListActivity extends Activity {
                             db.insert(StockContract.ProductEntry.TABLE_NAME, null, values);
                             db.close();
                             prodAdapter.add(newValue, 0);
+                            prodAdapter.notifyDataSetChanged();
+
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    public void updateCategory(final View view) {
+        final EditText editText = new EditText(this);
+        final StockDbHelper helper = new StockDbHelper(view.getContext());
+
+        final String oldValue = ((TextView) view).getText().toString();
+        editText.setText(oldValue);
+
+        int message = 0;
+        if((int) view.getTag(R.string.type) == R.string.Cat) {
+            message = R.string.newCat;
+        } else if((int) view.getTag(R.string.type) == R.string.Prod) {
+            message = R.string.newProd;
+        }
+        new AlertDialog.Builder(this)
+                .setMessage(message)
+                .setView(editText)
+                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SQLiteDatabase db = helper.getReadableDatabase();
+                        ContentValues values = new ContentValues();
+                        String newValue = editText.getText().toString();
+
+                        if((int) view.getTag(R.string.type) == R.string.Cat) {
+
+                            values.put(StockContract.CategoryEntry.COLUMN_NAME_NAME, newValue);
+
+                            if(!newValue.equals("")) {
+                                ContentValues prodValues = new ContentValues();
+                                prodValues.put(StockContract.ProductEntry.COLUMN_NAME_CAT, newValue);
+                                db.update(StockContract.ProductEntry.TABLE_NAME, prodValues,
+                                        StockContract.ProductEntry.COLUMN_NAME_CAT + " = ?",
+                                        new String[] {oldValue});
+                                db.update(StockContract.CategoryEntry.TABLE_NAME, values,
+                                        StockContract.CategoryEntry.COLUMN_NAME_NAME + " = ?",
+                                        new String[] {oldValue});
+                            } else {
+                                db.delete(StockContract.ProductEntry.TABLE_NAME,
+                                        StockContract.ProductEntry.COLUMN_NAME_CAT + " = ?",
+                                        new String[] {oldValue});
+                                db.delete(StockContract.CategoryEntry.TABLE_NAME,
+                                        StockContract.CategoryEntry.COLUMN_NAME_NAME + " = ?",
+                                        new String[] {oldValue});
+                            }
+
+                            db.close();
+                            finish();
+                            startActivity(getIntent());
+
+                        } else if((int) view.getTag(R.string.type) == R.string.Prod) {
+
+                            values.put(StockContract.ProductEntry.COLUMN_NAME_NAME, newValue);
+
+                            if(!newValue.equals("")) {
+                                db.update(StockContract.ProductEntry.TABLE_NAME, values,
+                                        StockContract.ProductEntry.COLUMN_NAME_NAME + " = ?",
+                                        new String[] {oldValue});
+                                prodAdapter.update(oldValue, newValue);
+                            } else {
+                                db.delete(StockContract.ProductEntry.TABLE_NAME,
+                                        StockContract.ProductEntry.COLUMN_NAME_NAME + " = ?",
+                                        new String[] {oldValue});
+                                prodAdapter.remove(oldValue);
+                            }
+
+                            db.close();
+                            prodAdapter.notifyDataSetChanged();
 
                         }
                     }

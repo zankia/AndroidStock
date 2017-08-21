@@ -74,4 +74,15 @@ public class ProductAdapter extends BaseAdapter {
         }
         items.put(name, quantity);
     }
+
+    public void update(String oldName, String newName) {
+        itemList.set(itemList.indexOf(oldName), newName);
+        items.put(newName, items.get(oldName));
+        items.remove(oldName);
+    }
+
+    public void remove(String name) {
+        itemList.remove(name);
+        items.remove(name);
+    }
 }

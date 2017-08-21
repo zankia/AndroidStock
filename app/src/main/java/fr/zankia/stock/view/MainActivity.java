@@ -36,7 +36,8 @@ public class MainActivity extends Activity {
         final EditText editText = new EditText(this);
 
         new AlertDialog.Builder(this)
-                .setMessage(getString(R.string.dbWarning) + getString(R.string.validityCheck))
+                .setMessage(getString(R.string.dbWarning) + " " +
+                        getString(R.string.validityCheck))
                 .setView(editText)
                 .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                     @Override

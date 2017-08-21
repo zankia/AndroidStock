@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="128dp"
     android:onClick="showCategory"
+    android:longClickable="true"
     android:textSize="36sp">
 
 </Button>
