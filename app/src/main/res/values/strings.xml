@@ -1,24 +1,23 @@
 <resources>
-    <string name="app_name">Stock</string>
-    <string name="leftButton">Consulter</string>
+    <string name="app_name" translatable="false">Stock</string>
     <string name="rightButton">Ajouter</string>
-    <string name="downButton">Remplir la DB</string>
-    <string name="dbToast">Base de données remplie</string>
-    <string name="empty"/>
-    <string name="extraName">name</string>
+    <string name="leftButton">Consulter</string>
+    <string name="empty" translatable="false" />
     <string name="emptyConfirm">Êtes vous sûr de vouloir vider</string>
     <string name="emptyAction">Vider</string>
     <string name="cancel">Annuler</string>
     <string name="confirm">Valider</string>
-    <string name="qMark">\?</string>
+    <string name="qMark" translatable="false">\?</string>
     <string name="newCat">Entrez le nom du fournisseur</string>
     <string name="newProd">Entrez le nom de la référence</string>
     <string name="type">type</string>
     <string name="name">name</string>
-    <string name="Cat">Cat</string>
-    <string name="Prod">Prod</string>
-    <string name="dbWarning">ATTENTION vous allez perdre toutes vos données si vous continuez.
-        Veuillez confirmer en écrivant le texte suivant :</string>
-    <string name="validityCheck">réinitialisation des données</string>
-    <string name="test">test</string>
+    <string name="Cat" translatable="false">Cat</string>
+    <string name="Prod" translatable="false">Prod</string>
+    <string name="jsonFile" translatable="false">backup.json</string>
+    <string name="backupInstructions">Charger depuis le fichier json ou Enregistrer vers ce fichier</string>
+    <string name="load">Charger</string>
+    <string name="save">Enregistrer</string>
+    <string name="loaded">fichier chargé</string>
+    <string name="saved">application enregistrée</string>
 </resources>

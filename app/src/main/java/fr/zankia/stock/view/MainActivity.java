@@ -2,19 +2,23 @@ package fr.zankia.stock.view;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Environment;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 import fr.zankia.stock.R;
-import fr.zankia.stock.dao.StockContract;
-import fr.zankia.stock.dao.StockDbHelper;
+import fr.zankia.stock.dao.StockJSON;
 
 public class MainActivity extends Activity {
 
@@ -22,71 +26,58 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        StockJSON.getInstance().load(getPreferences(MODE_PRIVATE));
     }
 
     public void setListActivity(View view) {
-        startActivity(new Intent(this, ListActivity.class));
+        startActivity(new Intent(this, ManageActivity.class));
     }
     public void setDisplayActivity(View view) {
-        startActivity(new Intent(this, DisplayActivity.class));
+        startActivity(new Intent(this, GridActivity.class));
     }
 
-    public void resetDB(View view) {
-        final StockDbHelper helper = new StockDbHelper(view.getContext());
+    public void showJSON(View view) {
+        final File file = new File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), getString(R.string.jsonFile));
+        if(!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         final EditText editText = new EditText(this);
 
         new AlertDialog.Builder(this)
-                .setMessage(getString(R.string.dbWarning) + " " +
-                        getString(R.string.validityCheck))
+                .setMessage(R.string.backupInstructions)
                 .setView(editText)
                 .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if(editText.getText().toString().equals(getString(R.string.validityCheck))) {
-                            SQLiteDatabase db = helper.getReadableDatabase();
-                            helper.delete(db);
-                            helper.onCreate(db);
-                            ContentValues values = new ContentValues();
-                            values.put(StockContract.CategoryEntry.COLUMN_NAME_NAME, "Fournisseur 1");
-                            db.insert(StockContract.CategoryEntry.TABLE_NAME, null, values);
-                            values = new ContentValues();
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_NAME, "Référence 1-1");
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_CAT, "Fournisseur 1");
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_QUANTITY, 0);
-                            db.insert(StockContract.ProductEntry.TABLE_NAME, null, values);
-                            values = new ContentValues();
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_NAME, "Référence 1-2");
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_CAT, "Fournisseur 1");
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_QUANTITY, 0);
-                            db.insert(StockContract.ProductEntry.TABLE_NAME, null, values);
-                            values = new ContentValues();
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_NAME, "Référence 1-3");
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_CAT, "Fournisseur 1");
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_QUANTITY, 0);
-                            db.insert(StockContract.ProductEntry.TABLE_NAME, null, values);
-                            values = new ContentValues();
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_NAME, "Référence 1-4");
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_CAT, "Fournisseur 1");
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_QUANTITY, 0);
-                            db.insert(StockContract.ProductEntry.TABLE_NAME, null, values);
-                            values = new ContentValues();
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_NAME, "Référence 1-5");
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_CAT, "Fournisseur 1");
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_QUANTITY, 0);
-                            db.insert(StockContract.ProductEntry.TABLE_NAME, null, values);
-                            values = new ContentValues();
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_NAME, "Référence 1-6");
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_CAT, "Fournisseur 1");
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_QUANTITY, 0);
-                            db.insert(StockContract.ProductEntry.TABLE_NAME, null, values);
-                            values = new ContentValues();
-                            values.put(StockContract.CategoryEntry.COLUMN_NAME_NAME, "Fournisseur 2");
-                            db.insert(StockContract.CategoryEntry.TABLE_NAME, null, values);
-                            db.close();
-
-                            Log.d("DB", "DB remplie");
-
-                            Toast.makeText(getApplicationContext(), R.string.dbToast, Toast.LENGTH_SHORT).show();
+                        if(editText.getText().toString().equals(getString(R.string.load))) {
+                            try {
+                                FileInputStream fs = new FileInputStream(file);
+                                BufferedReader br = new BufferedReader(new InputStreamReader(fs));
+                                StringBuilder json = new StringBuilder();
+                                String line;
+                                while((line = br.readLine()) != null) {
+                                    json.append(line);
+                                }
+                                StockJSON.getInstance().load(json.toString());
+                                StockJSON.getInstance().save();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            Toast.makeText(getApplicationContext(), R.string.loaded, Toast.LENGTH_SHORT).show();
+                        } else if(editText.getText().toString().equals(getString(R.string.save))) {
+                            try {
+                                FileOutputStream fs = new FileOutputStream(file);
+                                fs.write(getPreferences(MODE_PRIVATE).getString("data", "[]").getBytes());
+                                fs.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            Toast.makeText(getApplicationContext(), R.string.saved, Toast.LENGTH_SHORT).show();
                         }
                     }
                 })

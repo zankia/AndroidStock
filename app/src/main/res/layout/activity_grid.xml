@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="fr.zankia.stock.view.DisplayActivity">
+    tools:context="fr.zankia.stock.view.GridActivity">
 
     <GridView
         android:id="@+id/itemsView"

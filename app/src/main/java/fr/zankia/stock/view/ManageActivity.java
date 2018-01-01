@@ -2,10 +2,7 @@ package fr.zankia.stock.view;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,12 +16,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import fr.zankia.stock.R;
-import fr.zankia.stock.dao.StockContract;
-import fr.zankia.stock.dao.StockDbHelper;
+import fr.zankia.stock.dao.StockJSON;
+import fr.zankia.stock.model.Category;
+import fr.zankia.stock.model.Product;
 
-public class ListActivity extends Activity {
+public class ManageActivity extends Activity {
 
     private ProductAdapter prodAdapter;
+    private Category currentCategory;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -42,26 +41,11 @@ public class ListActivity extends Activity {
         super.onCreate(savedInstanceState);
         this.getActionBar().setDisplayHomeAsUpEnabled(true);
         this.setTitle(R.string.rightButton);
-        setContentView(R.layout.activity_list);
+        setContentView(R.layout.activity_manage);
 
         ListView categoryView = (ListView) findViewById(R.id.categoryView);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.row_button);
-
-        StockDbHelper helper = new StockDbHelper(categoryView.getContext());
-        SQLiteDatabase db = helper.getReadableDatabase();
-
-        Cursor cursor = db.query(StockContract.CategoryEntry.TABLE_NAME,
-                new String[]{StockContract.CategoryEntry.COLUMN_NAME_NAME},
-                null, null, null, null, null);
-
-        while(cursor.moveToNext()) {
-            int index = cursor.getColumnIndexOrThrow(StockContract.CategoryEntry.COLUMN_NAME_NAME);
-            String val = cursor.getString(index);
-            adapter.add(val);
-        }
-
-        cursor.close();
-        db.close();
+        adapter.addAll(StockJSON.getInstance().getCategoryNames());
 
         categoryView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -83,6 +67,7 @@ public class ListActivity extends Activity {
 
     public void showCategory(View view) {
         String categoryName = ((TextView) view).getText().toString();
+        currentCategory = StockJSON.getInstance().getCategory(categoryName);
 
         for(int i = 0; i < ((ListView) view.getParent()).getChildCount(); ++i) {
             ((ListView) view.getParent()).getChildAt(i).getBackground().setColorFilter
@@ -101,7 +86,7 @@ public class ListActivity extends Activity {
                     if(amount.equals("")) {
                        amount = "0";
                     }
-                    silentDbUpdate(v, Integer.parseInt(amount));
+                    silentUpdateProductInView(v, Integer.parseInt(amount));
                 }
             }
         };
@@ -110,29 +95,9 @@ public class ListActivity extends Activity {
         this.prodAdapter = new ProductAdapter(R.layout.row_item, R.id.itemName, R.id
                 .itemQuantity, listener);
 
-        StockDbHelper helper = new StockDbHelper(itemsView.getContext());
-        SQLiteDatabase db = helper.getReadableDatabase();
-
-        Cursor cursor = db.query(StockContract.ProductEntry.TABLE_NAME,
-                new String[]{StockContract.ProductEntry.COLUMN_NAME_NAME,
-                        StockContract.ProductEntry.COLUMN_NAME_QUANTITY},
-                StockContract.ProductEntry.COLUMN_NAME_CAT + " = ?",
-                new String[]{categoryName},
-                null, null, null);
-
-        while(cursor.moveToNext()) {
-            int nameIndex = cursor.getColumnIndexOrThrow(StockContract.ProductEntry
-                    .COLUMN_NAME_NAME);
-            String prodName = cursor.getString(nameIndex);
-            int quantIndex = cursor.getColumnIndexOrThrow(StockContract.ProductEntry
-                    .COLUMN_NAME_QUANTITY);
-            int quantity = cursor.getInt(quantIndex);
-            this.prodAdapter.add(prodName, quantity);
+        for(Product product : currentCategory.getProducts()) {
+            prodAdapter.add(product.getName(), product.getQuantity());
         }
-
-        cursor.close();
-        db.close();
-
 
         itemsView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -147,7 +112,6 @@ public class ListActivity extends Activity {
         View footer = getLayoutInflater().inflate(R.layout.row_button_add, null);
         footer.setTag(R.string.Prod);
         footer.setTag(R.string.type, R.string.Prod);
-        footer.setTag(R.string.name, categoryName);
         if (itemsView.getFooterViewsCount() > 0) {
             itemsView.removeFooterView(itemsView.findViewWithTag(R.string.Prod));
         }
@@ -166,7 +130,7 @@ public class ListActivity extends Activity {
         if(value == 0) {
             return;
         }
-        dbUpdate(view, --value);
+        updateProductInView(view, --value);
     }
 
     public void addOne(View view) {
@@ -176,41 +140,31 @@ public class ListActivity extends Activity {
             text = "0";
         }
         int value = Integer.parseInt(text);
-        dbUpdate(view, ++value);
+        updateProductInView(view, ++value);
     }
 
-    private void dbUpdate(View view, int value) {
-        silentDbUpdate(view, value);
+    private void updateProductInView(View view, int value) {
+        silentUpdateProductInView(view, value);
         this.prodAdapter.notifyDataSetChanged();
     }
 
-    private void silentDbUpdate(View view, int value) {
+    private void silentUpdateProductInView(View view, int value) {
         String label = ((TextView) ((LinearLayout) view.getParent()).getChildAt(0))
                 .getText().toString();
-        StockDbHelper helper = new StockDbHelper(view.getContext());
-        SQLiteDatabase db = helper.getReadableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(StockContract.ProductEntry.COLUMN_NAME_QUANTITY, value);
-
-        db.update(StockContract.ProductEntry.TABLE_NAME,
-                values,
-                StockContract.ProductEntry.COLUMN_NAME_NAME + "= ?",
-                new String[] {label});
-
-        db.close();
+        currentCategory.getProduct(label).setQuantity(value);
+        StockJSON.getInstance().save();
 
         this.prodAdapter.add(label, value);
     }
 
     public void addCategory(final View view) {
         final EditText editText = new EditText(this);
-        final StockDbHelper helper = new StockDbHelper(view.getContext());
+        final int type = (int) view.getTag(R.string.type);
 
         int message = 0;
-        if((int) view.getTag(R.string.type) == R.string.Cat) {
+        if(type == R.string.Cat) {
             message = R.string.newCat;
-        } else if((int) view.getTag(R.string.type) == R.string.Prod) {
+        } else if(type == R.string.Prod) {
             message = R.string.newProd;
         }
         new AlertDialog.Builder(this)
@@ -219,30 +173,21 @@ public class ListActivity extends Activity {
                 .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        SQLiteDatabase db = helper.getReadableDatabase();
-                        ContentValues values = new ContentValues();
                         String newValue = editText.getText().toString();
 
-                        if((int) view.getTag(R.string.type) == R.string.Cat) {
-
-                            values.put(StockContract.CategoryEntry.COLUMN_NAME_NAME, newValue);
-                            db.insert(StockContract.CategoryEntry.TABLE_NAME, null, values);
-                            db.close();
+                        if(type == R.string.Cat) {
+                            StockJSON.getInstance().addCategory(newValue);
                             finish();
                             startActivity(getIntent());
 
-                        } else if((int) view.getTag(R.string.type) == R.string.Prod) {
-
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_NAME, newValue);
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_CAT,
-                                    (String) view.getTag(R.string.name));
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_QUANTITY, 0);
-                            db.insert(StockContract.ProductEntry.TABLE_NAME, null, values);
-                            db.close();
+                        } else if(type == R.string.Prod) {
+                            currentCategory.addProduct(newValue);
                             prodAdapter.add(newValue, 0);
                             prodAdapter.notifyDataSetChanged();
 
                         }
+
+                        StockJSON.getInstance().save();
                     }
                 })
                 .setNegativeButton(R.string.cancel, null)
@@ -251,15 +196,15 @@ public class ListActivity extends Activity {
 
     public void updateCategory(final View view) {
         final EditText editText = new EditText(this);
-        final StockDbHelper helper = new StockDbHelper(view.getContext());
+        final int type = (int) view.getTag(R.string.type);
 
         final String oldValue = ((TextView) view).getText().toString();
         editText.setText(oldValue);
 
         int message = 0;
-        if((int) view.getTag(R.string.type) == R.string.Cat) {
+        if(type == R.string.Cat) {
             message = R.string.newCat;
-        } else if((int) view.getTag(R.string.type) == R.string.Prod) {
+        } else if(type == R.string.Prod) {
             message = R.string.newProd;
         }
         new AlertDialog.Builder(this)
@@ -268,56 +213,33 @@ public class ListActivity extends Activity {
                 .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        SQLiteDatabase db = helper.getReadableDatabase();
-                        ContentValues values = new ContentValues();
                         String newValue = editText.getText().toString();
 
-                        if((int) view.getTag(R.string.type) == R.string.Cat) {
+                        if(type == R.string.Cat) {
 
-                            values.put(StockContract.CategoryEntry.COLUMN_NAME_NAME, newValue);
-
-                            if(!newValue.equals("")) {
-                                ContentValues prodValues = new ContentValues();
-                                prodValues.put(StockContract.ProductEntry.COLUMN_NAME_CAT, newValue);
-                                db.update(StockContract.ProductEntry.TABLE_NAME, prodValues,
-                                        StockContract.ProductEntry.COLUMN_NAME_CAT + " = ?",
-                                        new String[] {oldValue});
-                                db.update(StockContract.CategoryEntry.TABLE_NAME, values,
-                                        StockContract.CategoryEntry.COLUMN_NAME_NAME + " = ?",
-                                        new String[] {oldValue});
+                            if(newValue.equals("")) {
+                                StockJSON.getInstance().removeCategory(oldValue);
                             } else {
-                                db.delete(StockContract.ProductEntry.TABLE_NAME,
-                                        StockContract.ProductEntry.COLUMN_NAME_CAT + " = ?",
-                                        new String[] {oldValue});
-                                db.delete(StockContract.CategoryEntry.TABLE_NAME,
-                                        StockContract.CategoryEntry.COLUMN_NAME_NAME + " = ?",
-                                        new String[] {oldValue});
+                                currentCategory.setName(newValue);
                             }
 
-                            db.close();
                             finish();
                             startActivity(getIntent());
 
-                        } else if((int) view.getTag(R.string.type) == R.string.Prod) {
+                        } else if(type == R.string.Prod) {
 
-                            values.put(StockContract.ProductEntry.COLUMN_NAME_NAME, newValue);
-
-                            if(!newValue.equals("")) {
-                                db.update(StockContract.ProductEntry.TABLE_NAME, values,
-                                        StockContract.ProductEntry.COLUMN_NAME_NAME + " = ?",
-                                        new String[] {oldValue});
-                                prodAdapter.update(oldValue, newValue);
-                            } else {
-                                db.delete(StockContract.ProductEntry.TABLE_NAME,
-                                        StockContract.ProductEntry.COLUMN_NAME_NAME + " = ?",
-                                        new String[] {oldValue});
+                            if(newValue.equals("")) {
+                                currentCategory.removeProduct(oldValue);
                                 prodAdapter.remove(oldValue);
+                            } else {
+                                currentCategory.getProduct(oldValue).setName(newValue);
+                                prodAdapter.update(oldValue, newValue);
                             }
-
-                            db.close();
                             prodAdapter.notifyDataSetChanged();
 
                         }
+
+                        StockJSON.getInstance().save();
                     }
                 })
                 .setNegativeButton(R.string.cancel, null)
