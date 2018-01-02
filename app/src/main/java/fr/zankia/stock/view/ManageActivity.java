@@ -69,12 +69,7 @@ public class ManageActivity extends Activity {
         String categoryName = ((TextView) view).getText().toString();
         currentCategory = StockJSON.getInstance().getCategory(categoryName);
 
-        for(int i = 0; i < ((ListView) view.getParent()).getChildCount(); ++i) {
-            ((ListView) view.getParent()).getChildAt(i).getBackground().setColorFilter
-                    (0xFFD8D8D8, PorterDuff.Mode.MULTIPLY);
-        }
-        view.getBackground().setColorFilter(getResources().getColor(android.R.color
-                .holo_blue_dark), PorterDuff.Mode.MULTIPLY);
+        setTitle(getString(R.string.rightButton) + " - " + categoryName);
 
         View.OnFocusChangeListener listener = new View.OnFocusChangeListener() {
             @Override
