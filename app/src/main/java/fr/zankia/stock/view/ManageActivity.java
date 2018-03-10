@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -49,7 +48,6 @@ public class ManageActivity extends Activity {
         categoryView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d("longClick", ((TextView) view).getText().toString());
                 view.setTag(R.string.type, R.string.Cat);
                 updateCategory(view);
                 return true;
@@ -84,8 +82,6 @@ public class ManageActivity extends Activity {
         View.OnFocusChangeListener listener = new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                Log.d("View", ((EditText) v).getText().toString());
-                Log.d("Focus", String.valueOf(hasFocus));
                 if(!hasFocus) {
                     String amount = ((EditText) v).getText().toString();
                     if(amount.equals("")) {
@@ -107,7 +103,6 @@ public class ManageActivity extends Activity {
         itemsView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d("longClick", ((TextView) view).getText().toString());
                 view.setTag(R.string.type, R.string.Prod);
                 updateCategory(view);
                 return true;

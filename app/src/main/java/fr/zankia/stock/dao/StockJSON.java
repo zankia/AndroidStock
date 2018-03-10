@@ -1,7 +1,5 @@
 package fr.zankia.stock.dao;
 
-import android.util.Log;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -75,7 +73,5 @@ public class StockJSON implements ValueEventListener {
     }
 
     @Override
-    public void onCancelled(DatabaseError databaseError) {
-        Log.d(StockJSON.class.getName(), "onCancelled: " + databaseError);
-    }
+    public void onCancelled(DatabaseError databaseError) { }
 }
