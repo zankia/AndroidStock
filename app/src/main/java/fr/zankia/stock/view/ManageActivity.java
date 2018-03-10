@@ -3,7 +3,6 @@ package fr.zankia.stock.view;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -43,7 +42,7 @@ public class ManageActivity extends Activity {
         this.setTitle(R.string.rightButton);
         setContentView(R.layout.activity_manage);
 
-        ListView categoryView = (ListView) findViewById(R.id.categoryView);
+        ListView categoryView = findViewById(R.id.categoryView);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.row_button);
         adapter.addAll(StockJSON.getInstance().getCategoryNames());
 
@@ -64,6 +63,17 @@ public class ManageActivity extends Activity {
         categoryView.setAdapter(adapter);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        StockJSON.getInstance().save();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        StockJSON.getInstance().save();
+    }
 
     public void showCategory(View view) {
         String categoryName = ((TextView) view).getText().toString();
@@ -86,7 +96,7 @@ public class ManageActivity extends Activity {
             }
         };
 
-        ListView itemsView = (ListView) findViewById(R.id.itemsView);
+        ListView itemsView = findViewById(R.id.itemsView);
         this.prodAdapter = new ProductAdapter(R.layout.row_item, R.id.itemName, R.id
                 .itemQuantity, listener);
 
@@ -147,7 +157,6 @@ public class ManageActivity extends Activity {
         String label = ((TextView) ((LinearLayout) view.getParent()).getChildAt(0))
                 .getText().toString();
         currentCategory.getProduct(label).setQuantity(value);
-        StockJSON.getInstance().save();
 
         this.prodAdapter.add(label, value);
     }
@@ -179,10 +188,8 @@ public class ManageActivity extends Activity {
                             currentCategory.addProduct(newValue);
                             prodAdapter.add(newValue, 0);
                             prodAdapter.notifyDataSetChanged();
-
                         }
 
-                        StockJSON.getInstance().save();
                     }
                 })
                 .setNegativeButton(R.string.cancel, null)
@@ -231,10 +238,8 @@ public class ManageActivity extends Activity {
                                 prodAdapter.update(oldValue, newValue);
                             }
                             prodAdapter.notifyDataSetChanged();
-
                         }
 
-                        StockJSON.getInstance().save();
                     }
                 })
                 .setNegativeButton(R.string.cancel, null)

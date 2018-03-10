@@ -4,6 +4,10 @@ public class Product {
     private String name;
     private int quantity;
 
+    public Product() {
+        this("");
+    }
+
     public Product(String name) {
         this(name, 0);
     }

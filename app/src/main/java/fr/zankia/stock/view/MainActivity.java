@@ -26,7 +26,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        StockJSON.getInstance().load(getPreferences(MODE_PRIVATE));
+        StockJSON.getInstance();
     }
 
     public void setListActivity(View view) {
@@ -36,52 +36,4 @@ public class MainActivity extends Activity {
         startActivity(new Intent(this, GridActivity.class));
     }
 
-    public void showJSON(View view) {
-        final File file = new File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), getString(R.string.jsonFile));
-        if(!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        final EditText editText = new EditText(this);
-
-        new AlertDialog.Builder(this)
-                .setMessage(R.string.backupInstructions)
-                .setView(editText)
-                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if(editText.getText().toString().equals(getString(R.string.load))) {
-                            try {
-                                FileInputStream fs = new FileInputStream(file);
-                                BufferedReader br = new BufferedReader(new InputStreamReader(fs));
-                                StringBuilder json = new StringBuilder();
-                                String line;
-                                while((line = br.readLine()) != null) {
-                                    json.append(line);
-                                }
-                                StockJSON.getInstance().load(json.toString());
-                                StockJSON.getInstance().save();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            Toast.makeText(getApplicationContext(), R.string.loaded, Toast.LENGTH_SHORT).show();
-                        } else if(editText.getText().toString().equals(getString(R.string.save))) {
-                            try {
-                                FileOutputStream fs = new FileOutputStream(file);
-                                fs.write(getPreferences(MODE_PRIVATE).getString("data", "[]").getBytes());
-                                fs.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            Toast.makeText(getApplicationContext(), R.string.saved, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .show();
-    }
 }
