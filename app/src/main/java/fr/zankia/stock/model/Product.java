@@ -3,6 +3,7 @@ package fr.zankia.stock.model;
 public class Product {
     private String name;
     private int quantity;
+    private float price;
 
     public Product() {
         this("");
@@ -13,6 +14,10 @@ public class Product {
     }
 
     public Product(String name, int quantity) {
+        this(name, quantity, 0);
+    }
+
+    public Product(String name, int quantity, int price) {
         this.name = name;
         this.quantity = quantity;
     }
@@ -31,5 +36,13 @@ public class Product {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public float getPrice() {
+        return price;
+    }
+
+    public void setPrice(float price) {
+        this.price = price;
     }
 }

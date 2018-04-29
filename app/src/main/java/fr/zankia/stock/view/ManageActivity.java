@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.InputType;
+import android.text.Layout;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -49,7 +52,7 @@ public class ManageActivity extends Activity {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 view.setTag(R.string.type, R.string.Cat);
-                updateCategory(view);
+                update(view);
                 return true;
             }
         });
@@ -104,7 +107,7 @@ public class ManageActivity extends Activity {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 view.setTag(R.string.type, R.string.Prod);
-                updateCategory(view);
+                update(view);
                 return true;
             }
         });
@@ -191,52 +194,81 @@ public class ManageActivity extends Activity {
                 .show();
     }
 
-    public void updateCategory(final View view) {
-        final EditText editText = new EditText(this);
-        final int type = (int) view.getTag(R.string.type);
-
-        final String oldValue = ((TextView) view).getText().toString();
-        editText.setText(oldValue);
-
-        int message = 0;
+    public void update(final View view) {
+        int type = (int) view.getTag(R.string.type);
+        LinearLayout content = new LinearLayout(this);
+        content.setOrientation(LinearLayout.VERTICAL);
+        String value = ((TextView) view).getText().toString();
         if(type == R.string.Cat) {
-            message = R.string.newCat;
+            updateCategory(content, value);
         } else if(type == R.string.Prod) {
-            message = R.string.newProd;
+            updateProduct(content, value);
         }
-        new AlertDialog.Builder(this)
-                .setMessage(message)
-                .setView(editText)
-                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+    }
+
+
+    private void updateCategory(ViewGroup content, final String oldValue) {
+        final EditText nameEditText = new EditText(this);
+
+        nameEditText.setText(oldValue);
+        content.addView(nameEditText);
+
+        int message = R.string.newCat;
+
+        showAlertDialog(content, message, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String newValue = editText.getText().toString();
+                        String newValue = nameEditText.getText().toString();
 
-                        if(type == R.string.Cat) {
-
-                            if(newValue.equals("")) {
-                                StockJSON.getInstance().removeCategory(oldValue);
-                            } else {
-                                currentCategory.setName(newValue);
-                            }
-
-                            finish();
-                            startActivity(getIntent());
-
-                        } else if(type == R.string.Prod) {
-
-                            if(newValue.equals("")) {
-                                currentCategory.removeProduct(oldValue);
-                                prodAdapter.remove(oldValue);
-                            } else {
-                                currentCategory.getProduct(oldValue).setName(newValue);
-                                prodAdapter.update(oldValue, newValue);
-                            }
-                            prodAdapter.notifyDataSetChanged();
+                        if(newValue.equals("")) {
+                            StockJSON.getInstance().removeCategory(oldValue);
+                        } else {
+                            currentCategory.setName(newValue);
                         }
 
+                        finish();
+                        startActivity(getIntent());
                     }
-                })
+                });
+    }
+
+    private void updateProduct(ViewGroup content, final String oldName) {
+        final EditText nameEditText = new EditText(this);
+        nameEditText.setText(oldName);
+        final Product product = currentCategory.getProduct(oldName);
+
+        final EditText priceEditText = new EditText(this);
+        priceEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
+        priceEditText.setText((String.valueOf(product.getPrice())));
+
+        content.addView(nameEditText);
+        content.addView(priceEditText);
+
+        int message = R.string.newProd;
+        showAlertDialog(content, message, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String newName = nameEditText.getText().toString();
+
+                if(newName.equals("")) {
+                    currentCategory.removeProduct(oldName);
+                    prodAdapter.remove(oldName);
+                } else {
+                    product.setName(newName);
+                    product.setPrice(Float.parseFloat(priceEditText.getText().toString()));
+                    prodAdapter.update(oldName, newName);
+                }
+                prodAdapter.notifyDataSetChanged();
+
+            }
+        });
+    }
+
+    private void showAlertDialog(View content, int message, DialogInterface.OnClickListener positiveBtn) {
+        new AlertDialog.Builder(this)
+                .setMessage(message)
+                .setView(content)
+                .setPositiveButton(R.string.confirm, positiveBtn)
                 .setNegativeButton(R.string.cancel, null)
                 .show();
     }

@@ -9,15 +9,19 @@
     <string name="confirm">Valider</string>
     <string name="qMark" translatable="false">\?</string>
     <string name="newCat">Entrez le nom du fournisseur</string>
-    <string name="newProd">Entrez le nom de la référence</string>
+    <string name="newProd">Entrez le nom de la référence et le prix</string>
     <string name="type">type</string>
     <string name="name">name</string>
     <string name="Cat" translatable="false">Cat</string>
     <string name="Prod" translatable="false">Prod</string>
-    <string name="jsonFile" translatable="false">backup.json</string>
+    <string name="csvFile" translatable="false">stock.csv</string>
     <string name="backupInstructions">Charger depuis le fichier json ou Enregistrer vers ce fichier</string>
     <string name="load">Charger</string>
     <string name="save">Enregistrer</string>
     <string name="loaded">fichier chargé</string>
     <string name="saved">application enregistrée</string>
+    <string name="csvHeader">\"Référence\",\"Quantité\",\"Prix Unitaire\",\"Total\"</string>
+    <string name="sumFunction">SOMME</string>
+    <string name="sendSubject">État du stock</string>
+    <string name="sendButton">Envoyer</string>
 </resources>
