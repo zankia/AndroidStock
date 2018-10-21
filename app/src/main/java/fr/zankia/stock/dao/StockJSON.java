@@ -1,5 +1,6 @@
 package fr.zankia.stock.dao;
 
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -21,9 +22,6 @@ public class StockJSON implements ValueEventListener {
         categories = new ArrayList<>();
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseDatabase.setPersistenceEnabled(true);
-        dbReference = firebaseDatabase.getReference("stock");
-        dbReference.addValueEventListener(this);
-        dbReference.keepSynced(true);
     }
 
     public static StockJSON getInstance() {
@@ -31,6 +29,17 @@ public class StockJSON implements ValueEventListener {
             instance = new StockJSON();
         }
         return instance;
+    }
+
+    public void selectNode(FirebaseUser currentUser) {
+        if (currentUser.getEmail() == null) {
+            return;
+        }
+        String path = currentUser.getEmail().substring(0, currentUser.getEmail().indexOf('@'));
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        dbReference = firebaseDatabase.getReference(path);
+        dbReference.addValueEventListener(this);
+        dbReference.keepSynced(true);
     }
 
     public void save() {

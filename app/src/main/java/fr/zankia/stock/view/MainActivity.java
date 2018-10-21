@@ -1,25 +1,23 @@
 package fr.zankia.stock.view;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.Toast;
 
-import java.io.BufferedReader;
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.IdpResponse;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.Locale;
 
 import fr.zankia.stock.R;
@@ -28,13 +26,39 @@ import fr.zankia.stock.model.Product;
 
 public class MainActivity extends Activity {
 
+    private FirebaseAuth auth;
+    private static final int RC_SIGN_IN = 11;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
         setContentView(R.layout.activity_main);
-        StockJSON.getInstance();
+        auth = FirebaseAuth.getInstance();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser == null) {
+            signInUser();
+        } else {
+            StockJSON.getInstance().selectNode(currentUser);
+        }
+    }
+
+    private void signInUser() {
+        startActivityForResult(
+            AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setAvailableProviders(
+                    Collections.singletonList(new AuthUI.IdpConfig.GoogleBuilder().build())
+                )
+                .build(),
+            RC_SIGN_IN
+        );
     }
 
     public void setListActivity(View view) {
@@ -65,7 +89,7 @@ public class MainActivity extends Activity {
                 .append("(D2:D").append(i-1).append(")\"");
 
         File file = new File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), getString(R.string.csvFile));
-        if(!file.exists()) {
+        if (!file.exists()) {
             try {
                 file.createNewFile();
             } catch (IOException e) {
@@ -86,5 +110,19 @@ public class MainActivity extends Activity {
         sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
         sendIntent.setType("plain/text");
         startActivity(sendIntent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode != RC_SIGN_IN) {
+            return;
+        }
+
+        if (resultCode != RESULT_OK) {
+            return;
+        }
+        StockJSON.getInstance().selectNode(auth.getCurrentUser());
     }
 }
