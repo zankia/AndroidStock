@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Stock</string>
+    <string name="app_name" translatable="false">StockAppro</string>
     <string name="rightButton">Ajouter</string>
     <string name="leftButton">Consulter</string>
     <string name="empty" translatable="false" />
