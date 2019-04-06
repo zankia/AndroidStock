@@ -66,5 +66,7 @@ object StockJSON : ValueEventListener {
         }
     }
 
-    override fun onCancelled(databaseError: DatabaseError) {}
+    override fun onCancelled(databaseError: DatabaseError) {
+        //Nothing to do
+    }
 }

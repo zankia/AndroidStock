@@ -23,5 +23,6 @@
     <string name="csvHeader">\"Référence\",\"Quantité\",\"Prix Unitaire\",\"Total\"</string>
     <string name="sumFunction">SOMME</string>
     <string name="sendSubject">État du stock</string>
-    <string name="sendButton">Envoyer</string>
+    <string name="mailSend">Envoyer par mail</string>
+    <string name="disconnect">Se déconnecter</string>
 </resources>

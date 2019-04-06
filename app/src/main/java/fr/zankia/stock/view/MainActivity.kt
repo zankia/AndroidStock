@@ -6,6 +6,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.StrictMode
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
@@ -14,6 +16,7 @@ import fr.zankia.stock.dao.StockJSON
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.util.Locale
 
 class MainActivity : Activity() {
 
@@ -37,6 +40,26 @@ class MainActivity : Activity() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.mailSend -> {
+                sendMail()
+                true
+            }
+            R.id.disconnect -> {
+                signOutUser()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     private fun signInUser() {
         startActivityForResult(
             AuthUI.getInstance()
@@ -49,6 +72,14 @@ class MainActivity : Activity() {
         )
     }
 
+    private fun signOutUser() {
+        AuthUI.getInstance()
+            .signOut(this)
+            .addOnCompleteListener {
+                recreate()
+            }
+    }
+
     fun setListActivity(view: View) {
         startActivity(Intent(this, ManageActivity::class.java))
     }
@@ -57,7 +88,7 @@ class MainActivity : Activity() {
         startActivity(Intent(this, GridActivity::class.java))
     }
 
-    fun sendMail(view: View) {
+    private fun sendMail() {
         val csvString = StringBuilder(getString(R.string.csvHeader))
         var i = 2
         for (categoryName in StockJSON.categoryNames) {
@@ -67,7 +98,7 @@ class MainActivity : Activity() {
                     .append("\";\"")
                     .append(quantity)
                     .append("\";\"")
-                    .append(price)
+                    .append(String.format(Locale.getDefault(), "%.2f", price))
                     .append("\";\"=B").append(i).append("*C").append(i).append("\"")
                 ++i
             }
