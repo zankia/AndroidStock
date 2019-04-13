@@ -35,8 +35,8 @@ class ProductAdapter(
             convertView
         }
 
-        (view.findViewById<TextView>(nameId)).text = getItem(position)
-        (view.findViewById<TextView>(quantityId)).text = items[getItem(position)].toString()
+        view.findViewById<TextView>(nameId).text = getItem(position)
+        view.findViewById<TextView>(quantityId).text = items[getItem(position)].toString()
 
         if (listener != null) {
             view.findViewById<View>(quantityId).onFocusChangeListener = listener

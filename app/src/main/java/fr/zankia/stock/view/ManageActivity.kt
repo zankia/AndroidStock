@@ -19,7 +19,6 @@ import fr.zankia.stock.R
 import fr.zankia.stock.dao.StockJSON
 import fr.zankia.stock.model.Category
 
-@SuppressLint("InflateParams")
 class ManageActivity : Activity() {
 
     private lateinit var prodAdapter: ProductAdapter
@@ -33,11 +32,12 @@ class ManageActivity : Activity() {
         else -> super.onOptionsItemSelected(item)
     }
 
+    @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true)
+            actionBar!!.setDisplayHomeAsUpEnabled(true)
         }
         setTitle(R.string.rightButton)
         setContentView(R.layout.activity_manage)
@@ -69,8 +69,19 @@ class ManageActivity : Activity() {
         StockJSON.save()
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (this::currentCategory.isInitialized) {
+            showCategory(currentCategory.name)
+        }
+    }
+
     fun showCategory(view: View) {
-        val categoryName = (view as TextView).text.toString()
+        showCategory((view as TextView).text.toString())
+    }
+
+    @SuppressLint("InflateParams")
+    private fun showCategory(categoryName: String) {
         currentCategory = StockJSON.getCategory(categoryName)
 
         title = getString(R.string.rightButton) + " - " + categoryName

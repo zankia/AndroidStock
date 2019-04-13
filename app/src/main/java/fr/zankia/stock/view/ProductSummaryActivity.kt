@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import android.widget.GridView
 import fr.zankia.stock.R
 import fr.zankia.stock.dao.StockJSON
@@ -46,7 +47,7 @@ class ProductSummaryActivity : Activity() {
         productView.adapter = adapter
     }
 
-    fun empty() {
+    fun empty(view: View) {
         AlertDialog.Builder(this)
             .setMessage(getString(R.string.emptyConfirm) + " " + category.name + " "
                 + getString(R.string.qMark))

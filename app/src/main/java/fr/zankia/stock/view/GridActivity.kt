@@ -26,7 +26,7 @@ class GridActivity : Activity() {
         super.onCreate(savedInstanceState)
 
         if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true)
+            actionBar!!.setDisplayHomeAsUpEnabled(true)
         }
         setTitle(R.string.leftButton)
         setContentView(R.layout.activity_grid)
