@@ -20,4 +20,7 @@
     <string name="sendSubject">État du stock</string>
     <string name="mailSend">Envoyer par mail</string>
     <string name="disconnect">Se déconnecter</string>
+    <string name="Category">Fournisseur</string>
+    <string name="Name">Nom</string>
+    <string name="Price">Prix</string>
 </resources>

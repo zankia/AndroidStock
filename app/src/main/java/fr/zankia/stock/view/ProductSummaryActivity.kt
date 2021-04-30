@@ -1,16 +1,16 @@
 package fr.zankia.stock.view
 
-import android.app.Activity
-import android.app.AlertDialog
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.GridView
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import fr.zankia.stock.R
 import fr.zankia.stock.dao.StockJSON
 import fr.zankia.stock.model.Category
 
-class ProductSummaryActivity : Activity() {
+class ProductSummaryActivity : AppCompatActivity() {
 
     private lateinit var category: Category
 

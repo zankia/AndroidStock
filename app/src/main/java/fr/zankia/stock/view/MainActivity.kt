@@ -1,6 +1,5 @@
 package fr.zankia.stock.view
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,6 +8,7 @@ import android.os.StrictMode
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import fr.zankia.stock.R
@@ -18,7 +18,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.util.Locale
 
-class MainActivity : Activity() {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
 
@@ -131,7 +131,7 @@ class MainActivity : Activity() {
         startActivity(sendIntent)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode != RC_SIGN_IN || resultCode != RESULT_OK || auth.currentUser == null) {

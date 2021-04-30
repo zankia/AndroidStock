@@ -1,28 +1,26 @@
 package fr.zankia.stock.view
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.app.AlertDialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.text.InputType
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.ListView
-import android.widget.TextView
+import android.view.inputmethod.EditorInfo
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ContextThemeWrapper
 import fr.zankia.stock.R
 import fr.zankia.stock.dao.StockJSON
 import fr.zankia.stock.model.Category
 
-class ManageActivity : Activity() {
+class ManageActivity : AppCompatActivity() {
 
     private lateinit var prodAdapter: ProductAdapter
     private lateinit var currentCategory: Category
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         android.R.id.home -> {
@@ -156,41 +154,14 @@ class ManageActivity : Activity() {
         this.prodAdapter.add(label, value)
     }
 
-    fun addCategory(view: View) {
-        val editText = EditText(this)
-        val type = view.getTag(R.string.type) as Int
-
-        var message = 0
-        if (type == R.string.Cat) {
-            message = R.string.newCat
-        } else if (type == R.string.Prod) {
-            message = R.string.newProd
-        }
-        AlertDialog.Builder(this)
-            .setMessage(message)
-            .setView(editText)
-            .setPositiveButton(R.string.confirm) { _, _ ->
-                val newValue = editText.text.toString()
-
-                if (type == R.string.Cat) {
-                    StockJSON.addCategory(newValue)
-                    finish()
-                    startActivity(intent)
-                } else if (type == R.string.Prod) {
-                    currentCategory.addProduct(newValue)
-                    prodAdapter.add(newValue, 0)
-                    prodAdapter.notifyDataSetChanged()
-                }
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
-    }
-
-    private fun update(view: View) {
+    fun update(view: View) {
         val type = view.getTag(R.string.type) as Int
         val content = LinearLayout(this)
         content.orientation = LinearLayout.VERTICAL
-        val value = (view as TextView).text.toString()
+        val value = when (view) {
+            is TextView -> view.text.toString()
+            else -> ""
+        }
         if (type == R.string.Cat) {
             updateCategory(content, value)
         } else if (type == R.string.Prod) {
@@ -199,57 +170,64 @@ class ManageActivity : Activity() {
     }
 
     private fun updateCategory(content: ViewGroup, oldValue: String) {
-        val nameEditText = EditText(this)
+        val nameEditText = addEditText(content, R.string.Name, oldValue)
 
-        nameEditText.setText(oldValue)
-        content.addView(nameEditText)
-
-        val message = R.string.newCat
-
-        showAlertDialog(content, message, DialogInterface.OnClickListener { _, _ ->
+        showAlertDialog(content, R.string.newCat) { _, _ ->
             val newValue = nameEditText.text.toString()
 
-            if (newValue == "") {
-                StockJSON.removeCategory(oldValue)
-            } else {
-                currentCategory.name = newValue
+            when {
+                newValue.isBlank() -> StockJSON.removeCategory(oldValue)
+                oldValue.isBlank() -> StockJSON.addCategory(newValue)
+                else -> StockJSON.getCategory(oldValue).name = newValue
             }
 
             finish()
             startActivity(intent)
-        })
+        }
     }
 
+
     private fun updateProduct(content: ViewGroup, oldName: String) {
-        val nameEditText = EditText(this)
-        nameEditText.setText(oldName)
+        val nameEditText = addEditText(content, R.string.Name, oldName)
         val product = currentCategory.getProduct(oldName)
 
-        val priceEditText = EditText(this)
-        priceEditText.inputType = InputType.TYPE_CLASS_NUMBER
-        priceEditText.setText(product.price.toString())
+        val priceEditText = addEditText(content, R.string.Price, product.price.toString())
+        if (product.price == 0F) priceEditText.setText("")
+        priceEditText.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
 
-        content.addView(nameEditText)
-        content.addView(priceEditText)
-
-        val message = R.string.newProd
-        showAlertDialog(content, message, DialogInterface.OnClickListener { _, _ ->
+        showAlertDialog(content, R.string.newProd) { _, _ ->
             val newName = nameEditText.text.toString()
+            val newPrice = priceEditText.text.toString()
 
-            if (newName == "") {
-                currentCategory.removeProduct(oldName)
-                prodAdapter.remove(oldName)
-            } else {
-                product.name = newName
-                product.price = java.lang.Float.parseFloat(priceEditText.text.toString())
-                prodAdapter.update(oldName, newName)
+            when {
+                newName.isBlank() -> {
+                    currentCategory.removeProduct(oldName)
+                    prodAdapter.remove(oldName)
+                }
+                oldName.isBlank() -> {
+                    currentCategory.addProduct(newName)
+                    prodAdapter.add(newName, 0)
+                }
+                else -> {
+                    product.name = newName
+                    product.price = if (newPrice.isNotBlank()) newPrice.toFloat() else 0F
+                    prodAdapter.update(oldName, newName)
+                }
             }
             prodAdapter.notifyDataSetChanged()
-        })
+        }
+    }
+
+    private fun addEditText(content: ViewGroup, label: Int, value: String): EditText {
+        val editText = EditText(this)
+        editText.setText(value)
+        editText.setHint(label)
+        content.addView(editText)
+        return editText
     }
 
     private fun showAlertDialog(content: View, message: Int, positiveBtn: DialogInterface.OnClickListener) {
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(ContextThemeWrapper(this, R.style.AlertDialogTheme))
             .setMessage(message)
             .setView(content)
             .setPositiveButton(R.string.confirm, positiveBtn)

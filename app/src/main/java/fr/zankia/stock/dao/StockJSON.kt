@@ -1,11 +1,7 @@
 package fr.zankia.stock.dao
 
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import fr.zankia.stock.model.Category
 import java.util.ArrayList
 import java.util.LinkedList

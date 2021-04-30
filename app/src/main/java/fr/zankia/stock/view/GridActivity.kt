@@ -1,6 +1,5 @@
 package fr.zankia.stock.view
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
@@ -8,11 +7,11 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.GridView
-
+import androidx.appcompat.app.AppCompatActivity
 import fr.zankia.stock.R
 import fr.zankia.stock.dao.StockJSON
 
-class GridActivity : Activity() {
+class GridActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         android.R.id.home -> {
