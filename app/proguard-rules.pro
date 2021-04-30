@@ -26,6 +26,6 @@
 
 # For Firebase
 -keepattributes Signature
--keepclassmembers class com.yourcompany.models.** {
+-keepclassmembers class fr.zankia.stock.** {
     *;
 }

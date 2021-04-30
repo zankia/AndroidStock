@@ -26,12 +26,11 @@ class ProductSummaryActivity : Activity() {
         super.onCreate(savedInstanceState)
 
         category = StockJSON.getCategory(
-            intent.getStringExtra(getString(R.string.name))
+            intent.getStringExtra(getString(R.string.name)) ?: ""
         )
 
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true)
-        }
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+
         title = category.name
         setContentView(R.layout.activity_product_summary)
 
