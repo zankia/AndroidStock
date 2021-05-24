@@ -11,37 +11,16 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
-        android:longClickable="true"
-        />
-
-    <ImageView
-        android:layout_width="36sp"
-        android:layout_height="match_parent"
-        android:adjustViewBounds="true"
-        android:contentDescription="@string/empty"
-        android:elevation="0dp"
-        android:onClick="removeOne"
-        app:srcCompat="@drawable/minus"
-        />
-
-    <EditText
-        android:id="@+id/itemQuantity"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:inputType="number"
         android:longClickable="false"
-        android:selectAllOnFocus="true"
-        android:textAlignment="center"
-        android:importantForAutofill="no"/>
+        />
 
     <ImageView
+        android:id="@+id/itemGrab"
         android:layout_width="36sp"
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
         android:contentDescription="@string/empty"
         android:elevation="0dp"
-        android:onClick="addOne"
-        app:srcCompat="@drawable/plus"
+        app:srcCompat="@drawable/hamburger"
         />
-
 </LinearLayout>

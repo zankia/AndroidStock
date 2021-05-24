@@ -5,6 +5,6 @@
     android:layout_height="30sp"
     android:onClick="update"
     android:scaleType="fitCenter"
-    app:srcCompat="@drawable/green_plus">
+    app:srcCompat="@android:drawable/ic_input_add">
 
 </ImageButton>

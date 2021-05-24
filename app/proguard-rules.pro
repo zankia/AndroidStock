@@ -29,3 +29,8 @@
 -keepclassmembers class fr.zankia.stock.** {
     *;
 }
+
+# For DragListView
+#-keep class com.woxthebox.dralistview.** {
+#    *;
+#}

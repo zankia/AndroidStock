@@ -9,7 +9,7 @@ android {
     buildToolsVersion '30.0.3'
     defaultConfig {
         applicationId "fr.zankia.stock"
-        minSdkVersion 23
+        minSdkVersion 24
         targetSdkVersion 30
         versionCode 5
         versionName "1.5"
@@ -34,6 +34,7 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:27.1.0')
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.annotation:annotation:1.2.0'
+    implementation 'com.github.woxthebox:draglistview:1.7.2'
     implementation 'com.google.firebase:firebase-core'
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-database'

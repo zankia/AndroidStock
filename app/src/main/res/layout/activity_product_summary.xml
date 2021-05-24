@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:contentDescription="@string/empty"
         android:onClick="empty"
-        app:srcCompat="@drawable/cross"/>
+        app:srcCompat="@android:drawable/ic_delete"/>
 
     <GridView
         android:id="@+id/itemsView"

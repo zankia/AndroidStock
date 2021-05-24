@@ -6,12 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
-
 import java.util.ArrayList
 import java.util.HashMap
 
 class ProductAdapter(
-    private val resource: Int,
+    var resource: Int,
     private val nameId: Int,
     private val quantityId: Int,
     private val listener: View.OnFocusChangeListener? = null
@@ -27,16 +26,17 @@ class ProductAdapter(
     override fun getItemId(position: Int) = position.toLong()
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view = if (convertView == null) {
+        val view = if (convertView != null) convertView else {
             val inflater = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)
                 as LayoutInflater
             inflater.inflate(this.resource, null)
-        } else {
-            convertView
         }
 
         view.findViewById<TextView>(nameId).text = getItem(position)
-        view.findViewById<TextView>(quantityId).text = items[getItem(position)].toString()
+        val quantityView = view.findViewById<TextView>(quantityId)
+        if (quantityView != null) {
+            quantityView.text = items[getItem(position)].toString()
+        }
 
         if (listener != null) {
             view.findViewById<View>(quantityId).onFocusChangeListener = listener
@@ -53,9 +53,7 @@ class ProductAdapter(
     }
 
     fun update(oldName: String, newName: String) {
-        if (oldName == newName) {
-            return
-        }
+        if (oldName == newName) return
         itemList[itemList.indexOf(oldName)] = newName
         items[newName] = items[oldName]
         items.remove(oldName)

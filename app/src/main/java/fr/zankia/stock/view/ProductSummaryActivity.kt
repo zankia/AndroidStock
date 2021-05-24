@@ -48,8 +48,7 @@ class ProductSummaryActivity : AppCompatActivity() {
 
     fun empty(view: View) {
         AlertDialog.Builder(this)
-            .setMessage(getString(R.string.emptyConfirm) + " " + category.name + " "
-                + getString(R.string.qMark))
+            .setMessage("${getString(R.string.emptyConfirm)} ${category.name}${getString(R.string.qMark)}")
             .setPositiveButton(R.string.emptyAction) { _, _ ->
                 emptyDb()
                 finish()

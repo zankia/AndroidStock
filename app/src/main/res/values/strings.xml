@@ -7,7 +7,7 @@
     <string name="emptyAction">Vider</string>
     <string name="cancel">Annuler</string>
     <string name="confirm">Valider</string>
-    <string name="qMark" translatable="false">\?</string>
+    <string name="qMark"> \?</string>
     <string name="newCat">Entrez le nom du fournisseur</string>
     <string name="newProd">Entrez le nom de la référence et le prix</string>
     <string name="type">type</string>
@@ -23,4 +23,5 @@
     <string name="Category">Fournisseur</string>
     <string name="Name">Nom</string>
     <string name="Price">Prix</string>
+    <string name="rearrange">Réorganiser</string>
 </resources>

@@ -41,36 +41,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.main_menu, menu)
+        menuInflater.inflate(R.menu.main_menu, menu)
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.mailSend -> {
-                sendMail()
-                true
-            }
-            R.id.disconnect -> {
-                signOutUser()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.mailSend -> {
+            sendMail()
+            true
         }
+        R.id.disconnect -> {
+            signOutUser()
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 
-    private fun signInUser() {
-        startActivityForResult(
-            AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setAvailableProviders(
-                    arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())
-                )
-                .build(),
-            RC_SIGN_IN
-        )
-    }
+    private fun signInUser() = startActivityForResult(
+        AuthUI.getInstance()
+            .createSignInIntentBuilder()
+            .setAvailableProviders(
+                arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())
+            )
+            .build(),
+        RC_SIGN_IN
+    )
 
     private fun signOutUser() {
         AuthUI.getInstance()
@@ -80,13 +75,9 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-    fun setListActivity(view: View) {
-        startActivity(Intent(this, ManageActivity::class.java))
-    }
+    fun setListActivity(view: View) = startActivity(Intent(this, ManageActivity::class.java))
 
-    fun setDisplayActivity(view: View) {
-        startActivity(Intent(this, GridActivity::class.java))
-    }
+    fun setDisplayActivity(view: View) = startActivity(Intent(this, GridActivity::class.java))
 
     private fun sendMail() {
         val csvString = StringBuilder(getString(R.string.csvHeader))
@@ -134,9 +125,7 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode != RC_SIGN_IN || resultCode != RESULT_OK || auth.currentUser == null) {
-            return
-        }
+        if (requestCode != RC_SIGN_IN || resultCode != RESULT_OK || auth.currentUser == null) return
 
         StockJSON.selectNode(auth.currentUser!!)
     }
